@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>게시판</title>
+<style type="text/css">
+	td {
+		text-align: center;
+	}
+</style>
+</head>
+<body>
+	<div>
+		<a th:href="@{/}">게시판</a>
+	</div>
+	<table>
+		<thead>
+			<tr>
+				<th>카테고리</th>
+				<th>제목</th>
+				<th>내용</th>
+				<th>글쓴이</th>
+				<th>작성일자</th>
+				<th>조회수</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>[[${detailBoard.categoryName}]]</td>
+				<td>[[${detailBoard.title}]]</td>
+				<td>[[${detailBoard.contents}]]</td>
+				<td>[[${detailBoard.writerName}]]</td>
+				<td>[[${detailBoard.createdDate}]]</td>
+				<td>[[${detailBoard.views}]]</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td><a th:href="@{/modify(boardId=${detailBoard.boardId})}">수정</a></td>
+				<td><a th:href="@{/delete(boardId=${detailBoard.boardId})}">삭제</a></td>
+			</tr>
+		</tfoot>
+	</table>
+</body>
+</html>

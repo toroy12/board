@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>게시판</title>
+</head>
+<body>
+	<div>
+		게시판
+	</div>
+	<form class="boardForm" th:action="@{/write}" method="post">
+		<div>
+			<input type="text" id="title" name="title">
+			<select name="category">
+				<th:block th:each="c : ${category}">
+					<option th:value="${c.categoryId}">[[${c.categoryName}]]</option>
+				</th:block>
+			</select>
+		</div>
+		<div>
+			<textarea rows="50" cols="50" id="contents" name="contents"></textarea>
+		</div>
+		<div>
+			<button type="submit">작성하기</button>
+		</div>
+	</form>
+</body>
+</html>

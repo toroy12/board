@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>게시판</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+	<div>
+		게시판
+	</div>
+	<form class="modifyForm" th:action="@{/modify}" method="post">
+		<div>
+			<input th:value="${boardId}" name="boardId" hidden="hidden">
+			<input type="text" id="title" name="title" th:value="${modify.title}">
+			<select name="category" id="category">
+				<th:block th:each="c : ${category}">
+					<option th:value="${c.categoryId}">[[${c.categoryName}]]</option>
+				</th:block>
+			</select>
+		</div>
+		<div>
+			<textarea rows="50" cols="50" id="contents" name="contents">[[${modify.contents}]]</textarea>
+		</div>
+		<div>
+			<button type="submit">수정하기</button>
+		</div>
+	</form>
+	<input id="categoryId" th:value="${modify.category}" hidden="hidden">
+	
+	<script type="text/javascript">
+		let categoryId = $('#categoryId').val(); 
+		$('#category').val(categoryId).prop("selected", true);
+	</script>
+</body>
+</html>
