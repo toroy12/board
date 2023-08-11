@@ -48,7 +48,43 @@
 			</if>
 		</where>
 		ORDER BY
-			num DESC;
+			num DESC
+		<if test="startIndex != null and startIndex > -1">
+				LIMIT #{startIndex}, #{pageSize};
+		</if>
+	</select>
+	
+	<select id="boardListCnt" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			tb_board;
+	</select>
+	
+	<select id="boardListByCategoryCnt" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			tb_board
+		WHERE
+			category = #{category};
+	</select>
+	
+	<select id="boardListBySearch" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM
+			tb_board AS b
+			JOIN
+			tb_user AS u
+			ON
+			b.writer_id = u.user_id
+		WHERE
+		<if test="category != ''">
+			category = #{category}
+			AND
+		</if>
+			${searchKey} LIKE CONCAT('%', #{searchValue}, '%');
 	</select>
 	
 	<select id="search" resultMap="BoardResultMap">
@@ -76,16 +112,17 @@
 		<where>
 			<if test="category != null and category != ''">
 				category = #{category}
-			</if>
-			<if test="category != null and searchKey != null">
-				and
+				AND
 			</if>
 			<if test="searchKey != null and searchKey != ''">		
-				b.${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+				${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
 			</if>
 		</where>
 		ORDER BY
-			num DESC;
+			num DESC
+		<if test="startIndex != null and startIndex > -1">
+				LIMIT #{startIndex}, #{pageSize};
+		</if>
 	</select>
 	
 	<select id="detailBoard" resultMap="BoardResultMap">

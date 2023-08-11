@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import board.dto.Board;
 import board.dto.Category;
+import board.dto.Pagination;
+import board.dto.Search;
 import board.mapper.BoardMapper;
 import board.service.BoardService;
 import lombok.AllArgsConstructor;
@@ -30,18 +32,30 @@ public class BoardController {
 	}
 	
 	@GetMapping("/")
-	public String boardList(@RequestParam(value = "category", required = false) String category, 
+	public String boardList(@RequestParam(value = "category", required = false) String category,
+							@RequestParam(defaultValue="1", required=false) int curPage,
+							@RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
+						    @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
 							Model model) {
+		
+		int boardlistCnt = boardMapper.boardListCnt();
+		Pagination pagination = new Pagination(boardlistCnt, curPage);
+		Search searchKeep = new Search(category, searchKey, searchValue);
+		
 		if(category == null) {
 			
-			List<Board> boardList = boardMapper.boardList(category);
+			List<Board> boardList = boardMapper.boardList(category, pagination.getStartIndex(), pagination.getPageSize());
 			
-			model.addAttribute("title", "게시판");
 			model.addAttribute("boardList", boardList);
+			model.addAttribute("pagination", pagination);
 		}else {
-			List<Board> boardListByCategory = boardMapper.boardList(category);
+			List<Board> boardListByCategory = boardMapper.boardList(category, pagination.getStartIndex(), pagination.getPageSize());
 			model.addAttribute("boardList", boardListByCategory);
+			model.addAttribute("pagination", pagination);
 		}
+		
+		model.addAttribute("title", "게시판");
+		model.addAttribute("search", searchKeep);
 		
 		return "board/boardList";
 	}	
@@ -50,25 +64,68 @@ public class BoardController {
 	public String search(@RequestParam(value = "category", defaultValue = "") String category, 
 						 @RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
 						 @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
-							Model model) {
+						 @RequestParam(defaultValue="1", required=false) int curPage,
+						 Model model) {
 		
-			List<Board> search = boardMapper.search(category, searchKey, searchValue);
-			
-			model.addAttribute("title", searchValue + " - " + search.get(0).getCategoryName() + " - 게시판");
-			model.addAttribute("boardList", search);
-			model.addAttribute("category", category);
+		int boardListBySearch = boardMapper.boardListBySearch(category, searchKey, searchValue);
+		Pagination pagination = new Pagination(boardListBySearch, curPage);
+		
+		List<Board> search = boardMapper.search(category, searchKey, searchValue, pagination.getStartIndex(), pagination.getPageSize());
+		Search searchKeep = new Search(category, searchKey, searchValue);
+		
+		String categoryName = "";
+		switch(category) {
+		case "free":
+			categoryName = "자유 - ";
+			break;
+		case "study":
+			categoryName = "공부 - ";
+			break;
+		case "game":
+			categoryName = "게임 - ";
+			break;
+		}
+		
+		model.addAttribute("title", categoryName + "게시판");
+		model.addAttribute("boardList", search);
+		model.addAttribute("search", searchKeep);
+		model.addAttribute("category", category);
+		model.addAttribute("pagination", pagination);
 		
 		return "board/boardList";
 	}	
 	
 	@GetMapping("/{category}")
 	public String boardListByCategory(@PathVariable(value = "category") String category,
+									  @RequestParam(defaultValue="1", required=false) int curPage,
+									  @RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
+									  @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
 									  Model model) {
 		
-		List<Board> boardListByCategory = boardMapper.boardList(category);
+		int boardlistByCategoryCnt = boardMapper.boardListByCategoryCnt(category);
+		Pagination pagination = new Pagination(boardlistByCategoryCnt, curPage);
+		Search searchKeep = new Search(category, searchKey, searchValue);
 		
-		model.addAttribute("title", boardListByCategory.get(0).getCategoryName() + " - 게시판");
+		List<Board> boardListByCategory = boardMapper.boardList(category, pagination.getStartIndex(), pagination.getPageSize());
+		
+		String categoryName = "";
+		switch(category) {
+		case "free":
+			categoryName = "자유";
+			break;
+		case "study":
+			categoryName = "공부";
+			break;
+		case "game":
+			categoryName = "게임";
+			break;
+		}
+		
+		
+		model.addAttribute("title", categoryName + " - 게시판");
 		model.addAttribute("boardList", boardListByCategory);
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("search", searchKeep);
 		
 		return "board/boardList";
 	}	
