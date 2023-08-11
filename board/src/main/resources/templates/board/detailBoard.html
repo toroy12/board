@@ -1,17 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<title>게시판</title>
-<style type="text/css">
-	td {
-		text-align: center;
-	}
-</style>
-</head>
-<body>
-	<div>
-		<a th:href="@{/}">게시판</a>
-	</div>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">
+<th:block layout:fragment="customContents">
 	<table>
 		<thead>
 			<tr>
@@ -40,5 +31,5 @@
 			</tr>
 		</tfoot>
 	</table>
-</body>
+</th:block>
 </html>

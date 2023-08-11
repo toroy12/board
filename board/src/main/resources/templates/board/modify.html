@@ -1,13 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<title>게시판</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-</head>
-<body>
-	<div>
-		게시판
-	</div>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/function}">
+<th:block layout:fragment="customContents">
 	<form class="modifyForm" th:action="@{/modify}" method="post">
 		<div>
 			<input th:value="${boardId}" name="boardId" hidden="hidden">
@@ -26,10 +21,5 @@
 		</div>
 	</form>
 	<input id="categoryId" th:value="${modify.category}" hidden="hidden">
-	
-	<script type="text/javascript">
-		let categoryId = $('#categoryId').val(); 
-		$('#category').val(categoryId).prop("selected", true);
-	</script>
-</body>
+</th:block>
 </html>

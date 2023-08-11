@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<head>
+	<meta charset="UTF-8">
+	<title th:text="${title}"></title>
+</head>
+<body>
+	<div>
+		<div th:replace="~{fragments/naviFragment :: naviFragment}"></div>
+		
+		<th:block layout:fragment="customContents"></th:block>
+				
+		<div th:replace="~{fragments/footerFragment :: footerFragment}"></div>
+	</div>
+	
+	<script type="text/javascript">
+		let categoryId = $('#categoryId').val(); 
+		$('#category').val(categoryId).prop("selected", true);
+	</script>
+</body>
+</html>

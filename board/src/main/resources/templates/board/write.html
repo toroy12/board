@@ -1,12 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-<title>게시판</title>
-</head>
-<body>
-	<div>
-		게시판
-	</div>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/function}">
+<th:block layout:fragment="customContents">
 	<form class="boardForm" th:action="@{/write}" method="post">
 		<div>
 			<input type="text" id="title" name="title">
@@ -23,5 +19,5 @@
 			<button type="submit">작성하기</button>
 		</div>
 	</form>
-</body>
+</th:block>
 </html>
