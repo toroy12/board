@@ -31,5 +31,17 @@
 			</tr>
 		</tfoot>
 	</table>
+	<div>
+		<form id="searchForm" th:action="@{/search}" method="get">
+			<input th:value="${category}" name="category" hidden="hidden">
+			<select name="searchKey" class="form-control">
+				<option value="title">제목</option>
+				<option value="contents">내용</option>
+				<option value="nickname">닉네임</option>
+			</select>
+			<input class="form-control" type="text" name="searchValue" placeholder="검색어를 입력해주세요."/>
+			<button id="searchFormBtn" type="submit">검색</button>
+		</form>
+	</div>
 </th:block>
 </html>

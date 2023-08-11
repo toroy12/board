@@ -1,7 +1,6 @@
 package board.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +30,13 @@ public class BoardController {
 	}
 	
 	@GetMapping("/")
-	public String allBoardList(@RequestParam(value ="category", required = false) String category, Model model) {
+	public String boardList(@RequestParam(value = "category", required = false) String category, 
+							Model model) {
 		if(category == null) {
 			
 			List<Board> boardList = boardMapper.boardList(category);
+			
+			model.addAttribute("title", "게시판");
 			model.addAttribute("boardList", boardList);
 		}else {
 			List<Board> boardListByCategory = boardMapper.boardList(category);
@@ -43,12 +45,29 @@ public class BoardController {
 		
 		return "board/boardList";
 	}	
-
+	
+	@GetMapping("/search")
+	public String search(@RequestParam(value = "category", defaultValue = "") String category, 
+						 @RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
+						 @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
+							Model model) {
+		
+			List<Board> search = boardMapper.search(category, searchKey, searchValue);
+			
+			model.addAttribute("title", searchValue + " - " + search.get(0).getCategoryName() + " - 게시판");
+			model.addAttribute("boardList", search);
+			model.addAttribute("category", category);
+		
+		return "board/boardList";
+	}	
+	
 	@GetMapping("/{category}")
-	public String boardListByCategory(@PathVariable (value = "category") String category, Model model) {
+	public String boardListByCategory(@PathVariable(value = "category") String category,
+									  Model model) {
 		
 		List<Board> boardListByCategory = boardMapper.boardList(category);
 		
+		model.addAttribute("title", boardListByCategory.get(0).getCategoryName() + " - 게시판");
 		model.addAttribute("boardList", boardListByCategory);
 		
 		return "board/boardList";
@@ -59,6 +78,7 @@ public class BoardController {
 		
 		Board detailBoard = boardService.detailBoard(boardId);
 		
+		model.addAttribute("title", detailBoard.getTitle() + " - 게시판");
 		model.addAttribute("detailBoard", detailBoard);
 		
 		return "board/detailboard";
@@ -69,6 +89,7 @@ public class BoardController {
 		
 		List<Category> category = boardMapper.category();
 		
+		model.addAttribute("title", "글쓰기");
 		model.addAttribute("category", category);
 		
 		return "board/write";
@@ -88,6 +109,7 @@ public class BoardController {
 		Board modify = boardMapper.modifyList(boardId); 
 		List<Category> category = boardMapper.category();
 		
+		model.addAttribute("title", "수정");
 		model.addAttribute("modify", modify);
 		model.addAttribute("boardId", boardId);
 		model.addAttribute("category", category);

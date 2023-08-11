@@ -42,10 +42,48 @@
 			ON 
 			b.writer_id = u.user_id
 			, (SELECT @rownum := 0) AS TMP
-			<if test="category != null">
-		WHERE
-			category = #{category}
+		<where>
+			<if test="category != null and category != ''">
+				category = #{category}
 			</if>
+		</where>
+		ORDER BY
+			num DESC;
+	</select>
+	
+	<select id="search" resultMap="BoardResultMap">
+		SELECT
+			@rownum := @rownum + 1 AS num
+			,b.board_id
+			,u.nickname
+			,b.title
+			,b.contents
+			,b.created_date
+			,b.views
+			,b.category
+			,c.category_name
+		FROM
+			tb_board AS b
+			JOIN	
+			tb_category AS c
+			ON 
+			b.category = c.category_id
+			JOIN 
+			tb_user AS u
+			ON 
+			b.writer_id = u.user_id
+			, (SELECT @rownum := 0) AS TMP
+		<where>
+			<if test="category != null and category != ''">
+				category = #{category}
+			</if>
+			<if test="category != null and searchKey != null">
+				and
+			</if>
+			<if test="searchKey != null and searchKey != ''">		
+				b.${searchKey} LIKE CONCAT('%', #{searchValue}, '%')
+			</if>
+		</where>
 		ORDER BY
 			num DESC;
 	</select>
