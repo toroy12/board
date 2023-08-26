@@ -1,5 +1,6 @@
 package board.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,9 @@ import board.dto.Pagination;
 import board.dto.Search;
 import board.mapper.BoardMapper;
 import board.service.BoardService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
@@ -140,15 +144,66 @@ public class BoardController {
 	}	
 	
 	@GetMapping("/{category}/{boardId}")
-	public String detailBoard(@PathVariable int boardId, Model model, HttpSession httpSession) {
+	public String detailBoard(@PathVariable int boardId, @PathVariable String category, 
+			Model model, HttpSession httpSession, HttpServletRequest request, HttpServletResponse response) {
 		
 		SessionUser user = (SessionUser) httpSession.getAttribute("user");
 		
 		 if (user != null) {
 		        model.addAttribute("userName", user.getName());
 		    }
-		
-		Board detailBoard = boardService.detailBoard(boardId);
+		 
+		 Board detailBoard = boardService.detailBoard(boardId);
+
+		 if ( detailBoard != null ) {   //  상세조회를 했을경우
+
+		        String userIdCheck = "";   // 현재 로그인한멤버와, 글쓴멤버가 같은지 체크 하기위한 변수초기화
+
+		        if ( user != null ) {        
+		            userIdCheck = user.getEmail();    
+		        }
+		        if ( detailBoard.getWriterId() != userIdCheck ) {  // 글쓴이와 로그인한 사람이 같지 않은경우 조회수증가
+		            Cookie cookie = null ;               // 기존에 존재하던 쿠키를 저장하는 변수
+		            Cookie[] cookies = request.getCookies(); // 저장되있는 쿠키 싹 다 얻어오기
+
+		            if ( cookies != null && cookies.length > 0 ) {    // 얻어온쿠키가 있을 경우
+		                // 얻어온 쿠키중 이름이 "readBoardNo" 가 있으면 얻어오기.
+		                for ( Cookie c : cookies) {
+		                    if ( c.getName().equals("boardViews")) {
+		                        cookie = c;
+		                    }
+		                }
+		            }
+		            int result=0;
+
+		            if ( cookie == null ) {      // "readBoardNo" 쿠키가 없을 경우
+		                cookie = new Cookie("boardViews",boardId+"");  
+		                result = boardService.boardViewsCount(boardId);   // 조회수증가 서비스호출
+
+		            }else {            // 기존에 "readBoardNo" 쿠키가 있을 경우
+		                //--> 쿠키에 저장된 값 뒤쪽에 현재 조회된 게시글 번호를 추가 
+		                // 단, 기존 쿠키값에 중복되는 번호가 없어야한다 !!!
+
+		                String[] temp = cookie.getValue().split("/");
+		                // "readBoardNo"  :  "1/2/11/10/20/300/1000"  == [1,2,11,20,300,1000]
+		                List<String> list = Arrays.asList(temp);   //  배열 --> List 변환
+
+		                // List.indexOf(Object) 
+		                // -- List에서 Object 와 일치하는 부분의 인덱스 반환,  없으면 -1 
+
+		                if ( list.indexOf( boardId+"") == -1 ) {  // 기존값에 같은글번호가 없다면 추가
+		                    cookie.setValue( cookie.getValue() +"/"+ boardId );
+		                    result = boardService.boardViewsCount(boardId);   // 조회수증가 서비스호출
+		                }
+		            }
+		            if ( result > 0 ) {   // 결과값 이용한 DB 동기화
+		            	detailBoard.setViews(detailBoard.getViews()+1);   // 이미 조회된 데이터 DB동기화
+		                cookie.setPath(request.getContextPath());
+		                cookie.setMaxAge(60 * 60 * 1);
+		                response.addCookie(cookie);
+		            }
+		        }
+		    }
 		
 		model.addAttribute("title", detailBoard.getTitle() + " - 게시판");
 		model.addAttribute("detailBoard", detailBoard);

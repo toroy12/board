@@ -31,4 +31,6 @@ public interface BoardMapper {
 	public int modify(Board board);
 	
 	public int delete(int boardId);
+	
+	public int boardViewCount(int boardId);
 }

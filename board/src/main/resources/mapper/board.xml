@@ -188,4 +188,10 @@
 		WHERE 
 			board_id = #{boardId};
 	</delete>
+	
+	<update id="boardViewCount" parameterType="int">
+	    UPDATE tb_board
+	    SET views = views + 1
+	    WHERE board_id = ${boardId}
+	</update>
 </mapper>
