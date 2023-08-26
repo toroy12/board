@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/function}">
+<th:block layout:fragment="customContents">
+	<div>
+		<h1>내가 쓴 글</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>카테고리</th>
+					<th>제목</th>
+					<th>작성일자</th>
+					<th>조회수</th>
+				</tr>
+			</thead>
+			<tbody>
+				<th:block th:if="${boardListByMe} != null"
+					th:each="b : ${boardListByMe}">
+					<tr>
+						<td><a th:href="@{'/' + ${b.category}}">[[${b.categoryName}]]</a></td>
+						<td><a th:href="@{'/' + ${b.category}+ '/' + ${b.boardId}}">[[${b.title}]]</a></td>
+						<td>[[${b.createdDate}]]</td>
+						<td>[[${b.views}]]</td>
+					</tr>
+				</th:block>
+				<th:block th:unless="${boardListByMe} != null">
+					<tr>
+						<td colspan="4">작성한 글이 없습니다.</td>
+					</tr>
+				</th:block>
+			</tbody>
+		</table>
+		<h1>내가 쓴 댓글</h1>
+		<table>
+			<thead>
+				<tr>
+					<th>카테고리</th>
+					<th>내용</th>
+					<th>작성일자</th>
+				</tr>
+			</thead>
+			<tbody>
+				<th:block th:if="${replyListByMe} != null"
+					th:each="r : ${replyListByMe}">
+					<tr>
+						<td><a th:href="@{'/' + ${r.category}}">[[${r.categoryName}]]</a></td>
+						<td><a th:href="@{'/' + ${r.category}+ '/' + ${r.boardId}}">[[${r.contents}]]</a></td>
+						<td>[[${r.createdDate}]]</td>
+					</tr>
+				</th:block>
+				<th:block th:unless="${replyListByMe} != null">
+					<tr>
+						<td colspan="3">작성한 댓글이 없습니다.</td>
+					</tr>
+				</th:block>
+			</tbody>
+		</table>
+	</div>
+</th:block>
+</html>

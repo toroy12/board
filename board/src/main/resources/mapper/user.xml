@@ -16,4 +16,34 @@
 	<insert id="save" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user(name,email,role) VALUES(#{name}, #{email}, #{role})
     </insert>
+    
+    <select id="boardListByMe">
+    	SELECT
+    		b.board_id AS boardId, b.title, b.category, c.category_name AS categoryName, b.created_date AS createdDate, b.views
+    	FROM
+    		tb_board AS b
+    		JOIN
+    		tb_category AS c
+    		ON
+    		b.category = c.category_id
+    	WHERE
+    		b.writer_id = #{email};
+    </select>
+    
+    <select id="replyListByMe">
+   		SELECT
+   			j.contents, j.created_date AS createdDate, c.category_id AS category, c.category_name AS categoryName, j.board_id AS boardId
+    	FROM
+    		tb_reply AS j
+    		JOIN
+    		tb_board AS b
+    		ON
+    		j.board_id = b.board_id
+    		JOIN
+    		tb_category AS c
+    		ON
+    		b.category = c.category_id
+    	WHERE
+    		j.writer_id = #{email};
+    </select>
 </mapper>

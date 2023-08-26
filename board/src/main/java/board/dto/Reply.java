@@ -11,6 +11,8 @@ public class Reply {
 	private String replyId;
 	private String writerId;
 	private String contents;
-	private String createDate;
+	private String createdDate;
 	private int boardId;
+	private String category;
+	private String categoryName;
 }
