@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import board.config.auth.SessionUser;
 import board.dto.Board;
 import board.dto.Category;
 import board.dto.Pagination;
 import board.dto.Search;
 import board.mapper.BoardMapper;
 import board.service.BoardService;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 
 @Controller
@@ -36,7 +38,13 @@ public class BoardController {
 							@RequestParam(defaultValue="1", required=false) int curPage,
 							@RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
 						    @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
-							Model model) {
+							Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		int boardlistCnt = boardMapper.boardListCnt();
 		Pagination pagination = new Pagination(boardlistCnt, curPage);
@@ -65,7 +73,13 @@ public class BoardController {
 						 @RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
 						 @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
 						 @RequestParam(defaultValue="1", required=false) int curPage,
-						 Model model) {
+						 Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		int boardListBySearch = boardMapper.boardListBySearch(category, searchKey, searchValue);
 		Pagination pagination = new Pagination(boardListBySearch, curPage);
@@ -73,20 +87,15 @@ public class BoardController {
 		List<Board> search = boardMapper.search(category, searchKey, searchValue, pagination.getStartIndex(), pagination.getPageSize());
 		Search searchKeep = new Search(category, searchKey, searchValue);
 		
-		String categoryName = "";
-		switch(category) {
-		case "free":
-			categoryName = "자유 - ";
-			break;
-		case "study":
-			categoryName = "공부 - ";
-			break;
-		case "game":
-			categoryName = "게임 - ";
-			break;
+		if(boardListBySearch != 0) {
+			
+			model.addAttribute("title", search.get(0).getCategoryName() + " - 게시판");
+
+		}else {
+			
+			model.addAttribute("title", "게시판");
 		}
 		
-		model.addAttribute("title", categoryName + "게시판");
 		model.addAttribute("boardList", search);
 		model.addAttribute("search", searchKeep);
 		model.addAttribute("category", category);
@@ -100,7 +109,13 @@ public class BoardController {
 									  @RequestParam(defaultValue="1", required=false) int curPage,
 									  @RequestParam(value = "searchKey", required = false, defaultValue = "title") String searchKey,
 									  @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue, 
-									  Model model) {
+									  Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		int boardlistByCategoryCnt = boardMapper.boardListByCategoryCnt(category);
 		Pagination pagination = new Pagination(boardlistByCategoryCnt, curPage);
@@ -108,21 +123,15 @@ public class BoardController {
 		
 		List<Board> boardListByCategory = boardMapper.boardList(category, pagination.getStartIndex(), pagination.getPageSize());
 		
-		String categoryName = "";
-		switch(category) {
-		case "free":
-			categoryName = "자유";
-			break;
-		case "study":
-			categoryName = "공부";
-			break;
-		case "game":
-			categoryName = "게임";
-			break;
+		if(boardlistByCategoryCnt != 0) {
+			
+			model.addAttribute("title", boardListByCategory.get(0).getCategoryName() + " - 게시판");
+
+		}else {
+			
+			model.addAttribute("title", "게시판");
 		}
 		
-		
-		model.addAttribute("title", categoryName + " - 게시판");
 		model.addAttribute("boardList", boardListByCategory);
 		model.addAttribute("pagination", pagination);
 		model.addAttribute("search", searchKeep);
@@ -131,7 +140,13 @@ public class BoardController {
 	}	
 	
 	@GetMapping("/{category}/{boardId}")
-	public String detailBoard(@PathVariable int boardId, Model model) {
+	public String detailBoard(@PathVariable int boardId, Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		Board detailBoard = boardService.detailBoard(boardId);
 		
@@ -142,7 +157,14 @@ public class BoardController {
 	}
 	
 	@GetMapping("/write")
-	public String write(Model model) {
+	public String write(Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		        model.addAttribute("userEmail", user.getEmail());
+		    }
 		
 		List<Category> category = boardMapper.category();
 		
@@ -153,15 +175,27 @@ public class BoardController {
 	}
 	
 	@PostMapping("/write")
-	public String write(Board board) {
+	public String write(Model model, Board board, HttpSession httpSession) {
 		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
+		 
 		boardMapper.write(board);
 		
 		return "redirect:/";
 	}
 	
 	@GetMapping("/modify")
-	public String modify(@RequestParam(value = "boardId") int boardId, Model model) {
+	public String modify(@RequestParam(value = "boardId") int boardId, Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		Board modify = boardMapper.modifyList(boardId); 
 		List<Category> category = boardMapper.category();
@@ -175,7 +209,13 @@ public class BoardController {
 	}
 	
 	@PostMapping("/modify")
-	public String modify(Board board) {
+	public String modify(Board board, Model model, HttpSession httpSession) {
+		
+		SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		
+		 if (user != null) {
+		        model.addAttribute("userName", user.getName());
+		    }
 		
 		boardMapper.modify(board);
 		

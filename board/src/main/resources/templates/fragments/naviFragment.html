@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
     <div class="header clearfix" th:fragment="naviFragment">
-    	헤더입니다.
-	</div>
+    	<div>
+    		<a th:href="@{/}">게시판</a>
+    	</div>
+            <th:block th:if="${userName} == null">
+            	<a th:href="@{/signUp}">회원 가입</a>
+	            <a th:href="@{/oauth2/authorization/google}">로그인</a>
+			</th:block>
+			<th:block th:unless="${userName} == null"> 
+				<span id="userName">[[${userName}]] 님</span>
+				<a th:href="@{/info}">내 정보</a>
+				<a th:href="@{/logout}">로그아웃</a>
+			</th:block>
+		</div>
 </html>

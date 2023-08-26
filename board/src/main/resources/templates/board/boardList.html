@@ -30,7 +30,7 @@
 		</tbody>
 		<tfoot>
 			<tr>
-				<td><a th:href="@{/write}">글쓰기</a></td>
+				<td th:if="@{userName} != null"><a th:href="@{/write}">글쓰기</a></td>
 			</tr>
 		</tfoot>
 	</table>

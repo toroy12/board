@@ -5,7 +5,8 @@
 <th:block layout:fragment="customContents">
 	<form class="boardForm" th:action="@{/write}" method="post">
 		<div>
-			<input type="text" id="title" name="title">
+			<input type="text" id="title" name="title" />
+			<input type="text" th:value="${userEmail}" name="writerId" />
 			<select name="category">
 				<th:block th:each="c : ${category}">
 					<option th:value="${c.categoryId}">[[${c.categoryName}]]</option>
