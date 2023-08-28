@@ -1,6 +1,7 @@
 package board.controller;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import board.config.auth.SessionUser;
 import board.dto.Board;
 import board.dto.Category;
 import board.dto.Pagination;
+import board.dto.Reply;
 import board.dto.Search;
 import board.mapper.BoardMapper;
 import board.service.BoardService;
@@ -154,6 +157,8 @@ public class BoardController {
 		    }
 		 
 		 Board detailBoard = boardService.detailBoard(boardId);
+		 List<Reply> showReply = boardMapper.showReply(boardId);
+		 int countReply = boardMapper.countReply(boardId);
 
 		 if ( detailBoard != null ) {   //  상세조회를 했을경우
 
@@ -207,6 +212,9 @@ public class BoardController {
 		
 		model.addAttribute("title", detailBoard.getTitle() + " - 게시판");
 		model.addAttribute("detailBoard", detailBoard);
+		model.addAttribute("showReply", showReply);
+		model.addAttribute("countReply", countReply);
+		model.addAttribute("category", category);
 		
 		return "board/detailboard";
 	}
@@ -284,5 +292,33 @@ public class BoardController {
 		 
 		 return "redirect:/";
 	 }
+	 
+	 @ResponseBody
+	 @PostMapping("/reply")
+	 public HashMap<String, Object> commentPost(@RequestParam(value="boardId") int boardId,
+			 			 @RequestParam(value="contents") String contents,
+			 			 HttpSession httpSession) throws Exception {
 		 
+		 SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		 
+		int cDepth = 0;
+		Long cGroup = 0L;
+		 
+		 return boardService.commentPost(boardId, contents, cDepth, cGroup, user.getEmail());
+	 }
+	 
+	 @ResponseBody
+	 @PostMapping("/replyAjax")
+	 public HashMap<String, Object> commentPost2(@RequestParam(value="replyId") int replyId,
+			 			@RequestParam(value="boardId") int boardId,
+			 			 @RequestParam(value="contents") String contents,
+			 			 HttpSession httpSession) throws Exception {
+		 
+		 SessionUser user = (SessionUser) httpSession.getAttribute("user");
+		 
+		int cDepth = 1;
+		Long cGroup = (long) replyId;
+		 
+		 return boardService.commentPost(boardId, contents, cDepth, cGroup, user.getEmail());
+	 }
 }

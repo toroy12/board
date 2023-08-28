@@ -3,7 +3,7 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/default}">
 <th:block layout:fragment="customContents">
-	
+
 	<table>
 		<thead>
 			<tr>
@@ -16,17 +16,22 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr th:unless="${#lists.isEmpty(boardList)}" th:each="b : ${boardList}">				
+			<tr th:unless="${#lists.isEmpty(boardList)}"
+				th:each="b : ${boardList}">
 				<td>[[${b.num}]]</td>
 				<td>[[${b.categoryName}]]</td>
-				<td><a th:href="@{'/' + ${b.category} + '/' + ${b.boardId}}">[[${b.title}]]</a></td>
+				<td><a th:href="@{'/' + ${b.category} + '/' + ${b.boardId}}">[[${b.title}]]</a>
+					<th:block th:if="${b.countReply} != 0">
+						[<b>[[${b.countReply}]]</b>]
+					</th:block>
+				</td>
 				<td>[[${b.writerName}]]</td>
 				<td>[[${b.createdDate}]]</td>
 				<td>[[${b.views}]]</td>
 			</tr>
-			 <tr th:if="${#lists.isEmpty(boardList)}">
-             	<td colspan="6">등록된 작성글이 없습니다.</td>
-             </tr>
+			<tr th:if="${#lists.isEmpty(boardList)}">
+				<td colspan="6">등록된 작성글이 없습니다.</td>
+			</tr>
 		</tbody>
 		<tfoot>
 			<tr>
@@ -41,39 +46,49 @@
 				<option value="b.title">제목</option>
 				<option value="b.contents">내용</option>
 				<option value="u.nickname">닉네임</option>
-			</select>
-			<input class="form-control" type="text" name="searchValue" placeholder="검색어를 입력해주세요." th:value="${search.searchValue}"/>
+			</select> <input class="form-control" type="text" name="searchValue"
+				placeholder="검색어를 입력해주세요." th:value="${search.searchValue}" />
 			<button id="searchFormBtn" type="submit">검색</button>
 		</form>
 	</div>
-	
-	
-	 <div class="row">
-		<div class="col-sm-12"  id="pg">
+
+
+	<div class="row">
+		<div class="col-sm-12" id="pg">
 			<div class="text-left">
 				<ul class="pagination">
-					<li th:if="${pagination.curPage != 1}" class="page-item">
-						<a th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pagination.prevPage})}" aria-label="Prev" class="page-link"> <span aria-hidden="true">&#60;</span></a>
+					<li th:if="${pagination.curPage != 1}" class="page-item"><a
+						th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pagination.prevPage})}"
+						aria-label="Prev" class="page-link"> <span aria-hidden="true">&#60;</span></a>
 					</li>
-					<li th:unless="${pagination.curPage != 1}" class="page-item disabled">
-						<span aria-label="Prev" class="page-link" tabindex="-1" aria-disabled="true"> <span aria-hidden="true">&#60;</span></span>
-					</li>
-					
-					<th:block th:each="pageNum : ${#numbers.sequence(pagination.startPage, pagination.endPage)}">
-							<li class="page-item active" aria-current="page" th:if="${pageNum == pagination.curPage}">
-							<span th:text="${pageNum}" class="page-link"></span>
-						</li>
-						<li th:unless="${pageNum == pagination.curPage} or ${pagination.listCnt == 0}" class="page-item">
-							<a th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pageNum})}" th:text="${pageNum}" class="page-link"></a>
-						</li>
+					<li th:unless="${pagination.curPage != 1}"
+						class="page-item disabled"><span aria-label="Prev"
+						class="page-link" tabindex="-1" aria-disabled="true"> <span
+							aria-hidden="true">&#60;</span></span></li>
+
+					<th:block
+						th:each="pageNum : ${#numbers.sequence(pagination.startPage, pagination.endPage)}">
+						<li class="page-item active" aria-current="page"
+							th:if="${pageNum == pagination.curPage}"><span
+							th:text="${pageNum}" class="page-link"></span></li>
+						<li
+							th:unless="${pageNum == pagination.curPage} or ${pagination.listCnt == 0}"
+							class="page-item"><a
+							th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pageNum})}"
+							th:text="${pageNum}" class="page-link"></a></li>
 					</th:block>
 
-					<li th:if="${pagination.curPage != pagination.pageCnt && pagination.pageCnt > 0}" class="page-item">
-						<a th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pagination.nextPage})}" aria-label="Next" class="page-link"> <span aria-hidden="true">&#62;</span></a>
+					<li
+						th:if="${pagination.curPage != pagination.pageCnt && pagination.pageCnt > 0}"
+						class="page-item"><a
+						th:href="@{/search(category=${category}, searchKey=${search.searchKey}, searchValue=${search.searchValue}, curPage=${pagination.nextPage})}"
+						aria-label="Next" class="page-link"> <span aria-hidden="true">&#62;</span></a>
 					</li>
-					<li th:unless="${pagination.curPage != pagination.pageCnt && pagination.pageCnt > 0}" class="page-item disabled">
-						<span aria-label="Next" class="page-link" tabindex="-1" aria-disabled="true"><span aria-hidden="true">&#62;</span></span>
-					</li>
+					<li
+						th:unless="${pagination.curPage != pagination.pageCnt && pagination.pageCnt > 0}"
+						class="page-item disabled"><span aria-label="Next"
+						class="page-link" tabindex="-1" aria-disabled="true"><span
+							aria-hidden="true">&#62;</span></span></li>
 				</ul>
 			</div>
 		</div>

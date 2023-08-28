@@ -21,4 +21,5 @@ public class Board {
 	private int views;
 	private String category;
 	private String categoryName;
+	private int countReply;
 }

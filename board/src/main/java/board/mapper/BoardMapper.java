@@ -6,31 +6,40 @@ import org.apache.ibatis.annotations.Mapper;
 
 import board.dto.Board;
 import board.dto.Category;
+import board.dto.Reply;
 
 @Mapper
 public interface BoardMapper {
 	
-	public List<Board> boardList(String category, int startIndex, int pageSize);
+	List<Board> boardList(String category, int startIndex, int pageSize);
 	
-	public int boardListCnt();
+	int boardListCnt();
 	
-	public int boardListByCategoryCnt(String category);
+	int boardListByCategoryCnt(String category);
 	
-	public int boardListBySearch(String category, String searchKey, String searchValue);
+	int boardListBySearch(String category, String searchKey, String searchValue);
 
-	public List<Board> search(String category, String searchKey, String searchValue, int startIndex, int pageSize);
+	List<Board> search(String category, String searchKey, String searchValue, int startIndex, int pageSize);
 	
-	public Board detailBoard(int boardId);
+	Board detailBoard(int boardId);
 	
-	public List<Category> category();
+	List<Category> category();
 	
-	public int write(Board board);
+	int write(Board board);
 	
-	public Board modifyList(int boardId);
+	Board modifyList(int boardId);
 	
-	public int modify(Board board);
+	int modify(Board board);
 	
-	public int delete(int boardId);
+	int delete(int boardId);
 	
-	public int boardViewCount(int boardId);
+	int boardViewCount(int boardId);
+	
+	int reply(String email, int boardId, String contents, int cDepth, Long cGroup);
+	
+	List<Reply> showReply(int boardId);
+	
+	int countReply(int boardId);
+	
+	int replyAjax(String contents, int boardId, String email);
 }

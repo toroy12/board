@@ -1,39 +1,114 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-	<meta charset="UTF-8">
-	<title th:text="${title}"></title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-	<style type="text/css">
-		table {
-			width: 100%;
-    		border: 1px solid #444444;
-		}
-		th, td {
-			text-align: center;
-			border: 1px solid #444444;
-		}
-	</style>
+<meta charset="UTF-8">
+<title th:text="${title}"></title>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style type="text/css">
+table {
+	width: 100%;
+	border: 1px solid #444444;
+}
+
+th, td {
+	text-align: center;
+	border: 1px solid #444444;
+}
+</style>
 </head>
 <body>
 	<div>
 		<div th:replace="~{fragments/naviFragment :: naviFragment}"></div>
 		<div th:replace="~{fragments/categoryFragment :: categoryFragment}"></div>
-		
+
 		<th:block layout:fragment="customContents"></th:block>
-				
+
 		<div th:replace="~{fragments/footerFragment :: footerFragment}"></div>
 	</div>
-	
-	<script type="text/javascript"> 
-		$('.deleteBtn').click(function(e){
+
+	<script type="text/javascript">
+		$('.deleteBtn').click(function(e) {
 			e.preventDefault();
-		
-			if(confirm("정말로 삭제하시겠습니까?")){
+
+			if (confirm("정말로 삭제하시겠습니까?")) {
 				window.location.href = $(this).attr("href");
 			}
 		});
+
+		$('.replyBox').click(function() {
+			if (!confirm("로그인 하시겠습니까?")) {
+				return;
+			} else {
+				window.location.href = "/oauth2/authorization/google";
+			}
+		});
+
+		var replyReplyBox = "<div class='replyBoxHtml'><textarea rows='5' cols='100' name='contents' id='replyContents' placeholder='댓글을 작성해주세요.'></textarea><button type='submit' class='submitBtn'>등록</button></div>"
+		$(document).ready(function() {
+			$(".replyReply").click(function() {
+				var parentParentElement = $(this).parent().parent();
+				if (parentParentElement.find(".replyBoxHtml").length === 0) {
+					parentParentElement.append(replyReplyBox);
+				} else {
+					parentParentElement.find(".replyBoxHtml").remove();
+				}
+			});
+		});
+
+		var boardId = $('input[name=boardId]').val();
+		var category = $('input[name=category]').val();
+
+		function commentPost() {
+
+			$
+					.ajax({
+						type : "post",
+						url : "/reply",
+						data : {
+							"contents" : $("#contents").val(),
+							"boardId" : $("input[name=boardId]").val()
+						},
+						success : function(data) {
+							if (data.result == "success") {
+								alert('성공');
+							}
+						},
+						error : function(request, status, error) {
+							alert("code: " + request.status + "\n" + "error: "
+									+ error);
+						}
+
+					});
+		}
+
+					
+					var replyId = $(this).parent().parent().chilren('input:eq(0)').val();
+					function commentPost2() {
+
+						$.ajax({
+							type : "post",
+							url : "/replyAjax",
+							data : {
+								"replyId" : $(this).parent().parent().children('input').val(),
+
+								"contents" : $("#replyContents").val(),
+								"boardId" : $("input[name=boardId]").val()
+							},
+							success : function(data) {
+								if (data.result == "success") {
+									location.reload();
+									alert('성공');
+								}
+							},
+							error : function(request, status, error) {
+								alert("code: " + request.status + "\n"
+										+ "error: " + error);
+							}
+
+						});
+					}
 	</script>
 </body>
 </html>

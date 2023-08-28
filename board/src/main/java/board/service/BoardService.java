@@ -1,14 +1,14 @@
 package board.service;
 
-import org.springframework.http.ResponseEntity;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import board.dto.Board;
+import board.dto.Reply;
 import board.mapper.BoardMapper;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -29,4 +29,14 @@ public class BoardService {
 	public int boardViewsCount(int boardId) {
 	    return boardMapper.boardViewCount(boardId);
 	}
+	
+	public HashMap<String, Object> commentPost(int boardId, String contents, int cDepth, Long cGroup, String username) throws Exception {
+        HashMap<String, Object> map = new HashMap<>();
+        
+        boardMapper.reply(username, boardId, contents, cDepth, cGroup);
+
+        map.put("result","success");
+        
+        return map;
+    }
 }

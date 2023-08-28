@@ -27,9 +27,51 @@
 		<tfoot>
 			<tr>
 				<td><a th:href="@{/modify(boardId=${detailBoard.boardId})}">수정</a></td>
-				<td><a th:href="@{/delete(boardId=${detailBoard.boardId})}" class="deleteBtn">삭제</a></td>
+				<td><a th:href="@{/delete(boardId=${detailBoard.boardId})}"
+					class="deleteBtn">삭제</a></td>
 			</tr>
 		</tfoot>
 	</table>
+	<br>
+	<br>
+	<div>
+		<a th:href="@{/}">목록</a>
+	</div>
+	<br>
+	<div>
+		<hr>
+		<span>댓글 [[${countReply}]]개</span>
+		<hr>
+		<form th:action="@{/replyAjax}" method="post">
+			<div th:if="${showReply} != null" th:each="r : ${showReply}">
+				<input th:value="${r.replyId}" id="replyId" hidden="hidden"/> <span>[[${r.writerName}]]
+					<small>[[${r.createdDate}]]</small>
+				</span><small><a th:href="@{#}" class="replyReply">답글 달기</a></small> <br>
+				<span>[[${r.contents}]]</span>
+				<hr>
+			</div>
+		</form>
+		<div th:unless="${showReply} != null">
+			<span>등록된 댓글이 없습니다.</span>
+		</div>
+	</div>
+
+	<div>
+		<form th:action="@{/reply}" method="post">
+			<span>댓글 쓰기</span> <input th:value="${detailBoard.boardId}"
+				name="boardId" hidden="hidden"> <input
+				th:value="${category}" name="category" hidden="hidden"> <br>
+			<th:block th:if="${userName} != null">
+				<textarea rows="5" cols="100" name="contents" id="contents"
+					placeholder="댓글을 작성해주세요."></textarea>
+				<button type="submit">등록</button>
+			</th:block>
+			<th:block th:unless="${userName} != null">
+				<textarea rows='5' cols='100' name='contents'
+					placeholder='댓글 작성 하시려면 로그인 해주세요. 로그인 하시겠습니까?' class="replyBox"></textarea>
+				<button type="submit" disabled>등록</button>
+			</th:block>
+		</form>
+	</div>
 </th:block>
 </html>

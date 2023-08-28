@@ -6,7 +6,7 @@
 	<form class="boardForm" th:action="@{/write}" method="post">
 		<div>
 			<input type="text" id="title" name="title" />
-			<input type="text" th:value="${userEmail}" name="writerId" />
+			<input type="text" th:value="${userEmail}" name="writerId" hidden="hidden"/>
 			<select name="category">
 				<th:block th:each="c : ${category}">
 					<option th:value="${c.categoryId}">[[${c.categoryName}]]</option>
